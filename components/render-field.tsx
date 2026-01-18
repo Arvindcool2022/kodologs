@@ -1,7 +1,11 @@
 "use client";
 
-import { type Control, Controller, type FieldPath } from "react-hook-form";
-import type { SignUpData } from "@/app/schema/auth";
+import {
+  type Control,
+  Controller,
+  type FieldPath,
+  type FieldValues,
+} from "react-hook-form";
 import {
   Field,
   FieldError,
@@ -10,23 +14,23 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 
-interface RenderFieldProps {
-  control: Control<SignUpData>;
-  name: FieldPath<SignUpData>;
+interface RenderFieldProps<T extends FieldValues> {
+  control: Control<T>;
+  name: FieldPath<T>;
   label: string;
   placeholder?: string;
   type?: string;
   children?: React.ReactNode;
 }
 
-export const RenderField = ({
+export const RenderField = <T extends FieldValues>({
   control,
   name,
   label,
   placeholder,
   type = "text",
   children,
-}: RenderFieldProps) => {
+}: RenderFieldProps<T>) => {
   return (
     <FieldGroup>
       <Controller

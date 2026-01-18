@@ -1,7 +1,9 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { type SignUpData, signupSchema } from "@/app/schema/auth";
 import { RenderField } from "@/components/render-field";
 import { Button } from "@/components/ui/button";
@@ -12,10 +14,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
 import { authClient } from "@/lib/auth-client";
 
 export default function SignUpPage() {
-  const { control, handleSubmit } = useForm({
+  const {
+    control,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = useForm({
     resolver: zodResolver(signupSchema),
     defaultValues: {
       confirmPassword: "",
@@ -25,14 +32,39 @@ export default function SignUpPage() {
       phoneNumber: "",
     },
   });
+
+  const router = useRouter();
   const onSubmit = async (data: SignUpData) => {
     console.log(data);
-    await authClient.signUp.email({
-      email: data.email,
-      password: data.password,
-      name: data.name,
-      phoneNumber: data.phoneNumber,
-    });
+    try {
+      const res = await authClient.signUp.email({
+        email: data.email,
+        password: data.password,
+        name: data.name,
+        phoneNumber: data.phoneNumber,
+        // fetchOptions: {
+        //   onSuccess: () => {
+        //     toast.success("Account created successfully");
+        //     router.push("/");
+        //   },
+        //   onError: (error) => {
+        //     toast.error("Sign up failed", {
+        //       description:
+        //         error instanceof Error ? error.message : "Unknown error",
+        //     });
+        //   },
+        // },
+      });
+      if (res.error) {
+        throw new Error(res.error.message);
+      }
+      toast.success("Account created successfully");
+      router.push("/");
+    } catch (error) {
+      toast.error("Sign up failed", {
+        description: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
   };
   return (
     <Card>
@@ -86,7 +118,10 @@ export default function SignUpPage() {
             name="confirmPassword"
             type="password"
           >
-            <Button className="mt-2 w-full">Sign Up</Button>
+            <Button className="mt-2 w-full" disabled={isSubmitting}>
+              {isSubmitting ? <Spinner /> : null}
+              {isSubmitting ? "Signing up..." : "Sign Up"}
+            </Button>
           </RenderField>
         </form>
       </CardContent>
