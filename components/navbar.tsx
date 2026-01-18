@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AuthNavButtons } from "./auth-nav-buttons";
 import { ThemeToggle } from "./theme-toggle";
 import { buttonVariants } from "./ui/button";
 
@@ -24,15 +25,7 @@ export function Navbar() {
         </div>
       </div>
       <div className="flex items-center gap-2">
-        <Link className={buttonVariants()} href="/auth/sign-up">
-          Sign up
-        </Link>
-        <Link
-          className={buttonVariants({ variant: "secondary" })}
-          href="/auth/login"
-        >
-          Login
-        </Link>
+        <AuthNavButtons />
         <ThemeToggle />
       </div>
     </nav>

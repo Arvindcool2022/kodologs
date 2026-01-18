@@ -20,7 +20,7 @@ export default function MainLayout({
         <ArrowBigLeft className="h-6 w-6" />
         Back
       </Link>
-      <div className="">{children}</div>
+      <div className="mx-auto w-full max-w-md">{children}</div>
     </div>
   );
 }

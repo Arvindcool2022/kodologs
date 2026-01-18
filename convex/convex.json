@@ -1,0 +1,7 @@
+{
+  "components": {
+    "betterAuth": {
+      "path": "@convex-dev/better-auth/convex"
+    }
+  }
+}
