@@ -13,14 +13,26 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "./ui/textarea";
 
-interface RenderFieldProps<T extends FieldValues> {
-  control: Control<T>;
-  name: FieldPath<T>;
+interface BaseFieldProps {
+  children?: React.ReactNode;
   label: string;
   placeholder?: string;
+}
+interface RenderFieldProps<T extends FieldValues> extends BaseFieldProps {
+  control: Control<T>;
+  name: FieldPath<T>;
+
   type?: string;
   children?: React.ReactNode;
+}
+
+interface RenderTextAreaFieldProps<T extends FieldValues>
+  extends BaseFieldProps {
+  control: Control<T>;
+  name: FieldPath<T>;
+  rows?: number;
 }
 
 export const RenderField = <T extends FieldValues>({
@@ -53,6 +65,39 @@ export const RenderField = <T extends FieldValues>({
                   field.onChange(e);
                 }
               }}
+            />
+            {fieldState.error && (
+              <FieldError>{fieldState.error.message}</FieldError>
+            )}
+          </Field>
+        )}
+      />
+      {children}
+    </FieldGroup>
+  );
+};
+
+export const RenderTextAreaField = <T extends FieldValues>({
+  control,
+  name,
+  label,
+  placeholder,
+  children,
+  rows = 5,
+}: RenderTextAreaFieldProps<T>) => {
+  return (
+    <FieldGroup>
+      <Controller
+        control={control}
+        name={name}
+        render={({ field, fieldState }) => (
+          <Field>
+            <FieldLabel>{label}</FieldLabel>
+            <Textarea
+              aria-invalid={fieldState.invalid}
+              placeholder={placeholder}
+              rows={rows}
+              {...field}
             />
             {fieldState.error && (
               <FieldError>{fieldState.error.message}</FieldError>
