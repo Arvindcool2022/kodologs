@@ -5,7 +5,7 @@ interface PageHeaderProps {
 
 export const PageHeader = ({ children, description }: PageHeaderProps) => {
   return (
-    <div className="mx-auto text-center">
+    <div className="mx-auto mb-8 text-center">
       <h1 className="font-extrabold text-4xl tracking-tight sm:text-5xl">
         {children}
       </h1>

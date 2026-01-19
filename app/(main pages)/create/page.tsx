@@ -47,40 +47,45 @@ export default function CreatePage() {
 
   return (
     <div className="py-12">
-      <PageHeader description="Share you thoughts with the world">
-        Create Post
+      <PageHeader description="Share your thoughts with the world on Kodologs">
+        Write on Kodologs
       </PageHeader>
-      <Card className="mx-auto w-full max-w-2xl">
-        <CardHeader>
-          <CardTitle>Create Blog Article</CardTitle>
-          <CardDescription>Create a new blog post</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-            <RenderField
-              control={control}
-              key="title"
-              label="Title"
-              name="title"
-              placeholder="a short title"
-              type="text"
-            />
-            <RenderTextAreaField
-              control={control}
-              key="content"
-              label="Content"
-              name="content"
-              placeholder="paste your content here"
-              rows={10}
-            >
-              <Button className="mt-2 w-full" disabled={isSubmitting}>
-                {isSubmitting ? <Spinner /> : null}
-                {isSubmitting ? "Creating your blog..." : "Submit Blog"}
-              </Button>
-            </RenderTextAreaField>
-          </form>
-        </CardContent>
-      </Card>
+      <div className="sm:py-20">
+        <Card className="mx-auto w-full max-w-2xl">
+          <CardHeader>
+            <CardTitle className="text-2xl">Create a New Article</CardTitle>
+            <CardDescription>
+              Publish your ideas, stories, and insights for the Kodologs
+              community
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+              <RenderField
+                control={control}
+                key="title"
+                label="Title"
+                name="title"
+                placeholder="a short title"
+                type="text"
+              />
+              <RenderTextAreaField
+                control={control}
+                key="content"
+                label="Content"
+                name="content"
+                placeholder="paste your content here"
+                rows={10}
+              >
+                <Button className="mt-2 w-full" disabled={isSubmitting}>
+                  {isSubmitting ? <Spinner /> : null}
+                  {isSubmitting ? "Creating your blog..." : "Submit Blog"}
+                </Button>
+              </RenderTextAreaField>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
