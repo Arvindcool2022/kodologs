@@ -35,7 +35,7 @@ export default function BlogCard({ post }: Readonly<{ post: Doc<"posts"> }>) {
             {post.title}
           </h1>
           <p className="mb-4 -pt-1 text-muted-foreground text-xs">
-            created at {formattedDate}
+            {post.authorEmail} created at {formattedDate}
           </p>
         </Link>
         <p>

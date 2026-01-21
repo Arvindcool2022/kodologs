@@ -7,6 +7,6 @@ export default defineSchema({
   posts: defineTable({
     title: v.string(),
     content: v.string(),
-    authorId: v.string(),
-  }).index("by_author", ["authorId"]),
+    authorEmail: v.string(),
+  }).index("by_author", ["authorEmail"]),
 });

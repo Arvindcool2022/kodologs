@@ -10,6 +10,14 @@ export const getAllPosts = query({
   },
 });
 
+export const getPostById = query({
+  args: { id: v.id("posts") },
+  handler: async (ctx, { id }) => {
+    const post = await ctx.db.get("posts", id);
+    return post;
+  },
+});
+
 export const create = mutation({
   args: {
     title: v.string(),
@@ -23,7 +31,7 @@ export const create = mutation({
     const id = await ctx.db.insert("posts", {
       title,
       content,
-      authorId: user._id,
+      authorEmail: user.email,
     });
     return id;
   },
