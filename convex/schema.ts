@@ -8,5 +8,6 @@ export default defineSchema({
     title: v.string(),
     content: v.string(),
     authorEmail: v.string(),
+    imgStorageId: v.id("_storage"),
   }).index("by_author", ["authorEmail"]),
 });

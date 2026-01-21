@@ -1,17 +1,14 @@
-import Image from "next/image";
+import type { FunctionReturnType } from "convex/server";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import type { Doc } from "@/convex/_generated/dataModel";
-import { cn } from "@/lib/utils";
+import type { api } from "@/convex/_generated/api";
+import { cn, formatDate } from "@/lib/utils";
+import { BlogImage } from "./blog-image";
 
-export default function BlogCard({ post }: Readonly<{ post: Doc<"posts"> }>) {
-  const date = new Date(post._creationTime);
-  const formattedDate = new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "2-digit",
-    year: "numeric",
-  }).format(date);
+type Post = FunctionReturnType<typeof api.posts.getAllPosts>[number];
+
+export default function BlogCard({ post }: Readonly<{ post: Post }>) {
   const preview =
     post.content.length > 25 ? `${post.content.slice(0, 25)}...` : post.content;
 
@@ -21,11 +18,11 @@ export default function BlogCard({ post }: Readonly<{ post: Doc<"posts"> }>) {
       key={post._id}
     >
       <div className="relative h-48 w-full overflow-hidden rounded-lg">
-        <Image
+        <BlogImage
           alt={post.title}
-          className="mb-2 h-48 w-full object-cover"
+          className="mb-2 h-48 w-full rounded-t-lg object-cover"
           height={250}
-          src="https://images.pexels.com/photos/399161/pexels-photo-399161.jpeg?_gl=1*jl33s6*_ga*MTgzNTU3MTc0Ni4xNzUxMzQ2MDEx*_ga_8JE65Q40S6*czE3Njg4MjkzNDYkbzckZzEkdDE3Njg4MjkzNzIkajM0JGwwJGgw"
+          src={post.imageUrl}
           width={400}
         />
       </div>
@@ -35,7 +32,7 @@ export default function BlogCard({ post }: Readonly<{ post: Doc<"posts"> }>) {
             {post.title}
           </h1>
           <p className="mb-4 -pt-1 text-muted-foreground text-xs">
-            {post.authorEmail} created at {formattedDate}
+            {post.authorEmail} created at {formatDate(post._creationTime)}
           </p>
         </Link>
         <p>

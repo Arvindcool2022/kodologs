@@ -35,7 +35,7 @@ export default function SignUpPage() {
 
   const router = useRouter();
   const onSubmit = async (data: SignUpData) => {
-    console.log(data);
+    console.log("onSubmit", data);
     try {
       const res = await authClient.signUp.email({
         email: data.email,

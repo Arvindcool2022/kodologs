@@ -7,7 +7,6 @@ import { EmptyBlogs } from "./no-blogs";
 export default async function BlogsGrid() {
   // await new Promise((r) => setTimeout(r, 5000)); // suspends HERE
   const data = await fetchAuthQuery(api.posts.getAllPosts);
-  console.log(data);
   if (data.length === 0) {
     return <EmptyBlogs />;
   }

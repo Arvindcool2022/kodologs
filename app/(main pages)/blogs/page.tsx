@@ -4,6 +4,9 @@ import { SkeletonCard } from "@/components/blogs/skeleton-card";
 import { PageHeader } from "@/components/header-comp";
 import BlogsGrid from "../../../components/blogs/blog-grid";
 
+export const dynamic = "force-static";
+export const revalidate = 30 * 60; //in seconds
+
 export default function BlogsPage() {
   return (
     <div className="py-12">

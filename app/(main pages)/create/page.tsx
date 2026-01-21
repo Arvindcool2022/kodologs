@@ -1,7 +1,7 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { createPost } from "@/app/actions";
 import { type BlogData, BlogSchema } from "@/app/schema/blog";
@@ -15,6 +15,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 
 export default function CreatePage() {
@@ -31,12 +38,14 @@ export default function CreatePage() {
   const onSubmit = async (data: BlogData) => {
     console.log("Form Data:", data);
     try {
-      const blogId = await createPost(data);
-      console.log("Post created with ID:", blogId);
+      const res = await createPost(data);
+      if (!res.success) {
+        throw new Error(res.error);
+      }
       toast.success("Blog post created successfully!", {
-        description: ` Your blog ID is ${blogId}`,
+        description: ` Your blog ID is ${res.id}`,
       });
-      router.push(`/blogs/${blogId}`); //! handle redirect in client after toast
+      router.push(`/blogs/${res.id}`); //! handle redirect in client after toast
     } catch (error) {
       console.error("Error creating post:", error);
       toast.error("Failed to create blog post", {
@@ -76,12 +85,35 @@ export default function CreatePage() {
                 name="content"
                 placeholder="paste your content here"
                 rows={10}
-              >
+              />
+              <FieldGroup>
+                <Controller
+                  control={control}
+                  name={"image"}
+                  render={({ field, fieldState }) => (
+                    <Field>
+                      <FieldLabel>Cover Image</FieldLabel>
+                      <Input
+                        accept="image/*"
+                        aria-invalid={fieldState.invalid}
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          field.onChange(file);
+                        }}
+                        placeholder="a catchy cover image"
+                        type="file"
+                      />
+                      {fieldState.error && (
+                        <FieldError>{fieldState.error.message}</FieldError>
+                      )}
+                    </Field>
+                  )}
+                />
                 <Button className="mt-2 w-full" disabled={isSubmitting}>
                   {isSubmitting ? <Spinner /> : null}
                   {isSubmitting ? "Creating your blog..." : "Submit Blog"}
                 </Button>
-              </RenderTextAreaField>
+              </FieldGroup>
             </form>
           </CardContent>
         </Card>
