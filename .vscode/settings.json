@@ -1,7 +1,7 @@
 {
   "typescript.tsdk": "node_modules/typescript/lib",
   "editor.formatOnSave": true,
-  "editor.formatOnPaste": true,
+  "editor.formatOnPaste": false,
 
   "[javascript]": { "editor.defaultFormatter": "biomejs.biome" },
   "[typescript]": { "editor.defaultFormatter": "biomejs.biome" },

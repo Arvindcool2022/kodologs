@@ -49,6 +49,7 @@ export const create = mutation({
       title,
       content,
       imgStorageId,
+      authorId: user._id,
       authorEmail: user.email,
     });
     return id;

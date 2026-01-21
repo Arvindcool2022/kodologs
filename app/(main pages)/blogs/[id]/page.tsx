@@ -3,15 +3,16 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { BlogImage } from "@/components/blogs/blog-image";
 import { buttonVariants } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { fetchAuthQuery } from "@/lib/auth-server";
 import { formatDate } from "@/lib/utils";
 
-export default async function Page({
-  params,
-}: Readonly<{ params: Promise<{ id: Id<"posts"> }> }>) {
+type BlogIdProps = Readonly<{ params: Promise<{ id: Id<"posts"> }> }>;
+
+export default async function Page({ params }: BlogIdProps) {
   const { id } = await params;
   const data = await fetchAuthQuery(api.posts.getPostById, { id });
   if (!data) {
@@ -40,13 +41,12 @@ export default async function Page({
       <h1 className="font-bold text-4xl text-foreground tracking-tight">
         {data.title}
       </h1>
-      <div className="mb-8 flex justify-between">
-        <p className="text-muted-foreground">{data.authorEmail}</p>
-        <p className="text-muted-foreground">
-          {formatDate(data._creationTime)}
-        </p>
+      <div className="mb-8 flex justify-between text-muted-foreground text-sm">
+        <p>{data.authorEmail}</p>
+        <p>{formatDate(data._creationTime)}</p>
       </div>
-      <p className="whitespace-pre-line">{data.content}</p>
+      <p className="whitespace-pre-wrap text-foreground/80">{data.content}</p>
+      <Separator />
     </div>
   );
 }
