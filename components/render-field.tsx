@@ -17,7 +17,7 @@ import { Textarea } from "./ui/textarea";
 
 interface BaseFieldProps {
   children?: React.ReactNode;
-  label: string;
+  label?: string;
   placeholder?: string;
 }
 interface RenderFieldProps<T extends FieldValues> extends BaseFieldProps {
@@ -92,7 +92,7 @@ export const RenderTextAreaField = <T extends FieldValues>({
         name={name}
         render={({ field, fieldState }) => (
           <Field>
-            <FieldLabel>{label}</FieldLabel>
+            {label && <FieldLabel>{label}</FieldLabel>}
             <Textarea
               aria-invalid={fieldState.invalid}
               placeholder={placeholder}
