@@ -5,8 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
-import { Button, buttonVariants } from "./ui/button";
-import { Skeleton } from "./ui/skeleton";
+import { Button, buttonVariants } from "../ui/button";
+import { Skeleton } from "../ui/skeleton";
 
 export function AuthNavButtons() {
   const { isAuthenticated, isLoading } = useConvexAuth();

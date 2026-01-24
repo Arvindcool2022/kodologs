@@ -1,7 +1,7 @@
 import Link from "next/link";
+import { NavLink } from "../ui/nav-link";
 import { AuthNavButtons } from "./auth-nav-buttons";
 import { ThemeToggle } from "./theme-toggle";
-import { NavLink } from "./ui/nav-link";
 
 export function Navbar() {
   return (

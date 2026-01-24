@@ -5,7 +5,21 @@ import { PageHeader } from "@/components/header-comp";
 import BlogsGrid from "../../../components/blogs/blog-grid";
 
 export const dynamic = "force-static";
-export const revalidate = 30 * 60; //in seconds
+//note: 30 * 60 is invalid
+export const revalidate = 1800; //*in seconds
+/**
+ *  NOTE:
+ * isAuthenticated() and getToken() rely on request cookies to resolve the session.
+ * Static pages (force-static / ISR / build-time render) run without a request context,
+ * so cookies and headers are unavailable.
+ *
+ * On static routes:
+ *   - isAuthenticated() always returns false
+ *   - getToken() always returns undefined
+ *
+ * These helpers only work on dynamic, per-request rendered pages/layouts.
+ * Do not use them inside statically rendered routes.
+ */
 
 export default function BlogsPage() {
   return (

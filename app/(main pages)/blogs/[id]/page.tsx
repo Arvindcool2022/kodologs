@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { BlogImage } from "@/components/blogs/blog-image";
+import PresenceList from "@/components/blogs/presence/post-presence";
 import { CommentSection } from "@/components/comments/comments-section";
 import { buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -38,10 +39,12 @@ export default async function BlogIdRoute({ params }: BlogIdProps) {
     api.comments.getCommentsByPostId,
     { postId: id }
   );
+  const _userId = fetchAuthQuery(api.presence.getUserId);
 
-  const [blogData, preLoadedComments] = await Promise.all([
+  const [blogData, preLoadedComments, userId] = await Promise.all([
     _blogData,
     _preLoadedComments,
+    _userId,
   ]);
 
   if (!blogData) {
@@ -73,6 +76,7 @@ export default async function BlogIdRoute({ params }: BlogIdProps) {
       <div className="mb-8 flex justify-between text-muted-foreground text-sm">
         <p>{blogData.authorEmail}</p>
         <p>{formatDate(blogData._creationTime)}</p>
+        {userId && <PresenceList roomId={blogData._id} usersId={userId} />}
       </div>
       <p className="whitespace-pre-wrap text-foreground/80">
         {blogData.content}
