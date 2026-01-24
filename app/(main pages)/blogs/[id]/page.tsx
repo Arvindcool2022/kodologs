@@ -1,4 +1,5 @@
 import { ArrowLeft } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { BlogImage } from "@/components/blogs/blog-image";
@@ -13,7 +14,24 @@ import { formatDate } from "@/lib/utils";
 
 type BlogIdProps = Readonly<{ params: Promise<{ id: Id<"posts"> }> }>;
 
-export default async function Page({ params }: BlogIdProps) {
+export async function generateMetaData({
+  params,
+}: BlogIdProps): Promise<Metadata> {
+  const { id } = await params;
+  const blogData = await fetchAuthQuery(api.posts.getPostById, { id });
+  if (!blogData) {
+    return {
+      title: "Blog not found",
+    };
+  }
+
+  return {
+    title: blogData.title,
+    description: blogData.content,
+  };
+}
+
+export default async function BlogIdRoute({ params }: BlogIdProps) {
   const { id } = await params;
   const _blogData = fetchAuthQuery(api.posts.getPostById, { id });
   const _preLoadedComments = preloadAuthQuery(
