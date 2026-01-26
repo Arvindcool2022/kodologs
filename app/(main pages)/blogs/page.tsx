@@ -4,9 +4,9 @@ import { SkeletonCard } from "@/components/blogs/skeleton-card";
 import { PageHeader } from "@/components/header-comp";
 import BlogsGrid from "../../../components/blogs/blog-grid";
 
-export const dynamic = "force-static";
-//note: 30 * 60 is invalid
-export const revalidate = 1800; //*in seconds
+// export const dynamic = "force-static";
+//note: 30 * 60 is invalid. why?
+// export const revalidate = 1800; //*in seconds
 /**
  *  NOTE:
  * isAuthenticated() and getToken() rely on request cookies to resolve the session.

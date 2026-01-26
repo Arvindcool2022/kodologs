@@ -15,3 +15,13 @@ export const MessageSchema = z.object({
 });
 
 export type MessageData = z.infer<typeof MessageSchema>;
+
+export const UpdateBlogSchema = z.object({
+  id: z.custom<Id<"posts">>(),
+  title: z.string().min(5).max(100),
+  content: z.string().min(20),
+  image: z.instanceof(File).optional(),
+  imageId: z.custom<Id<"_storage">>().optional(),
+});
+
+export type UpdateBlogData = z.infer<typeof UpdateBlogSchema>;

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Suspense } from "react";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/navbar/theme-provider";
 import { ConvexClientProvider } from "./convex-context-provider";
@@ -112,9 +113,12 @@ export default function RootLayout({
           enableSystem
         >
           <ConvexClientProvider>
-            <main className="mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8">
-              {children}
-            </main>
+            <Suspense fallback={null}>
+              {/* ✅ Wrap children */}
+              <main className="mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8">
+                {children}
+              </main>
+            </Suspense>
             <Toaster richColors />
           </ConvexClientProvider>
         </ThemeProvider>

@@ -51,6 +51,31 @@ export const create = mutation({
       imgStorageId,
       authorId: user._id,
       authorEmail: user.email,
+      updatedAt: Date.now(),
+    });
+    return id;
+  },
+});
+
+export const update = mutation({
+  args: {
+    id: v.id("posts"),
+    title: v.string(),
+    content: v.string(),
+    imgStorageId: v.id("_storage"),
+  },
+  handler: async (ctx, { id, title, content, imgStorageId }) => {
+    const user = await authComponent.safeGetAuthUser(ctx);
+    if (!user) {
+      throw new ConvexError("Unauthorized");
+    }
+    await ctx.db.patch("posts", id, {
+      title,
+      content,
+      imgStorageId,
+      authorId: user._id,
+      authorEmail: user.email,
+      updatedAt: Date.now(),
     });
     return id;
   },
@@ -65,5 +90,18 @@ export const generateImgUploadUrl = mutation({
     }
 
     return await ctx.storage.generateUploadUrl();
+  },
+});
+
+export const deleteImgById = mutation({
+  args: {
+    storageId: v.id("_storage"),
+  },
+  handler: async (ctx, args) => {
+    const user = await authComponent.safeGetAuthUser(ctx);
+    if (!user) {
+      throw new ConvexError("Unauthorized");
+    }
+    await ctx.storage.delete(args.storageId);
   },
 });

@@ -1,5 +1,6 @@
 import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
+import { cacheLife, cacheTag } from "next/cache";
 import Link from "next/link";
 import { Suspense } from "react";
 import { BlogImage } from "@/components/blogs/blog-image";
@@ -32,9 +33,17 @@ export async function generateMetaData({
   };
 }
 
+async function getCachedPost(id: Id<"posts">) {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("blogs", id);
+
+  return await fetchAuthQuery(api.posts.getPostById, { id });
+}
+
 export default async function BlogIdRoute({ params }: BlogIdProps) {
   const { id } = await params;
-  const _blogData = fetchAuthQuery(api.posts.getPostById, { id });
+  const _blogData = getCachedPost(id);
   const _preLoadedComments = preloadAuthQuery(
     api.comments.getCommentsByPostId,
     { postId: id }

@@ -8,6 +8,7 @@ export default defineSchema({
     authorId: v.string(),
     authorEmail: v.string(),
     imgStorageId: v.id("_storage"),
+    updatedAt: v.number(),
   }).index("by_author", ["authorEmail"]),
 
   comments: defineTable({

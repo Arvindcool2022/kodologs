@@ -21,6 +21,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  cacheComponents: true,
 };
 
 /**https://aromatic-puma-833.convex.cloud/api/storage/f7fbf6b2-4940-4a86-916e-145cdfb052ab */
