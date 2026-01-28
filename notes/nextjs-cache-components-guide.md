@@ -262,6 +262,221 @@ async function CachedContent({ sessionId }: { sessionId: string }) {
 
 ---
 
+## 🔑 Cache Keys vs Cache Tags - Understanding the Difference
+
+### What is a Cache Key?
+A **cache key** is automatically generated from your function's arguments and determines **which cache entry** to retrieve or store.
+
+### What is a Cache Tag?
+A **cache tag** is a **label** you manually assign to group cache entries for **invalidation purposes**.
+
+---
+
+### 🎯 How Cache Keys Work (Automatic)
+
+When you create a cached function, Next.js **automatically serializes the arguments** to create a unique cache key:
+
+```typescript
+async function getCachedPosts(userId: string, category: string) {
+  'use cache'
+  const posts = await db.posts.get({ userId, category })
+  return posts
+}
+
+// Different arguments = Different cache entries
+getCachedPosts('user-123', 'tech')  // Cache Entry 1
+getCachedPosts('user-123', 'news')  // Cache Entry 2
+getCachedPosts('user-456', 'tech')  // Cache Entry 3
+```
+
+**Cache Keys Created:**
+```
+Entry 1: getCachedPosts('user-123', 'tech')
+Entry 2: getCachedPosts('user-123', 'news')
+Entry 3: getCachedPosts('user-456', 'tech')
+```
+
+Each combination of arguments creates a **separate cache entry**. This happens automatically - you don't need to do anything.
+
+---
+
+### 🏷️ How Cache Tags Work (Manual)
+
+Cache tags let you **group related cache entries** so you can invalidate them together:
+
+```typescript
+async function getCachedPosts(userId: string, category: string) {
+  'use cache'
+  cacheTag('posts', `user-${userId}`)
+  
+  const posts = await db.posts.get({ userId, category })
+  return posts
+}
+
+// Create 3 cache entries with different keys
+getCachedPosts('user-123', 'tech')  // Tags: ['posts', 'user-user-123']
+getCachedPosts('user-123', 'news')  // Tags: ['posts', 'user-user-123']
+getCachedPosts('user-456', 'tech')  // Tags: ['posts', 'user-user-456']
+```
+
+**Now you can invalidate by tag:**
+```typescript
+// Invalidate ALL posts for user-123 (both 'tech' and 'news')
+updateTag('user-user-123')
+
+// Invalidate ALL posts across all users
+updateTag('posts')
+```
+
+---
+
+### 📊 Cache Key vs Cache Tag Comparison
+
+| Aspect | Cache Key | Cache Tag |
+|--------|-----------|-----------|
+| **What is it?** | Unique identifier for cache entry | Label for grouping entries |
+| **How it's created** | **Automatically** from function arguments | **Manually** with `cacheTag()` |
+| **Purpose** | Find specific cache entry | Group entries for invalidation |
+| **When it matters** | Reading from cache | Invalidating cache |
+| **Uniqueness** | Must be unique per entry | Can be shared across entries |
+| **Example** | `getUser('user-123')` | `cacheTag('users')` |
+
+---
+
+### 💡 Real-World Example: User Blog Posts
+
+```typescript
+import { cacheTag, updateTag } from 'next/cache'
+
+// Cached function with automatic cache key + manual cache tags
+async function getUserPosts(userId: string, token: string | undefined) {
+  'use cache'
+  cacheTag('posts', `user-${userId}`)
+  
+  const posts = await fetch(`/api/posts?userId=${userId}`, {
+    headers: { Authorization: token ? `Bearer ${token}` : '' }
+  })
+  
+  return posts.json()
+}
+
+// Usage creates different cache entries (automatic)
+await getUserPosts('alice', 'token-abc')  // Cache Entry 1
+await getUserPosts('alice', 'token-xyz')  // Cache Entry 2
+await getUserPosts('bob', 'token-123')    // Cache Entry 3
+await getUserPosts('bob', undefined)      // Cache Entry 4
+```
+
+**What got created:**
+
+```
+Cache Entry 1:
+  Key:  getUserPosts('alice', 'token-abc')
+  Tags: ['posts', 'user-alice']
+
+Cache Entry 2:
+  Key:  getUserPosts('alice', 'token-xyz')
+  Tags: ['posts', 'user-alice']
+
+Cache Entry 3:
+  Key:  getUserPosts('bob', 'token-123')
+  Tags: ['posts', 'user-bob']
+
+Cache Entry 4:
+  Key:  getUserPosts('bob', undefined)
+  Tags: ['posts', 'user-bob']
+```
+
+**Invalidation scenarios:**
+
+```typescript
+// Scenario 1: Invalidate all posts for Alice (both tokens)
+updateTag('user-alice')  // Invalidates Entry 1 & 2
+
+// Scenario 2: Invalidate all posts for all users
+updateTag('posts')       // Invalidates Entry 1, 2, 3, 4
+
+// Scenario 3: Can't invalidate just Entry 1
+// Cache keys don't support partial invalidation
+// You'd need to add more specific tags
+```
+
+---
+
+### 🎓 Advanced Pattern: Multiple Tags for Granular Control
+
+```typescript
+async function getPost(postId: string, userId: string) {
+  'use cache'
+  
+  // Tag with multiple labels for different invalidation scenarios
+  cacheTag(
+    'posts',              // Invalidate all posts
+    `post-${postId}`,     // Invalidate this specific post
+    `user-${userId}`      // Invalidate all posts by this user
+  )
+  
+  return db.posts.get(postId)
+}
+
+// Different cache entries (automatic keys)
+await getPost('post-1', 'alice')  // Entry 1
+await getPost('post-1', 'bob')    // Entry 2
+await getPost('post-2', 'alice')  // Entry 3
+
+// Flexible invalidation
+updateTag('post-1')      // Invalidates Entry 1 & 2 (same post, different users)
+updateTag('user-alice')  // Invalidates Entry 1 & 3 (same user, different posts)
+updateTag('posts')       // Invalidates all 3 entries
+```
+
+---
+
+### 🚨 Common Misconception
+
+#### ❌ WRONG: Thinking tags affect cache lookup
+```typescript
+async function getPosts(category: string) {
+  'use cache'
+  cacheTag('posts')
+  // ...
+}
+
+// These DON'T share the same cache entry!
+await getPosts('tech')  // Cache Entry 1
+await getPosts('news')  // Cache Entry 2
+
+// They have the same TAG but different KEYS
+// Tag doesn't affect cache lookup, only invalidation
+```
+
+#### ✅ CORRECT: Understanding keys vs tags
+```typescript
+// Cache KEY determines which entry to use (automatic from args)
+// Cache TAG determines which entries to invalidate (manual with cacheTag)
+
+await getPosts('tech')  
+// Key:  getPosts('tech')
+// Tag:  'posts'
+
+await getPosts('news')  
+// Key:  getPosts('news')  ← Different key = different entry
+// Tag:  'posts'           ← Same tag = both invalidated together
+```
+
+---
+
+### 📝 Key Takeaways
+
+1. **Cache Keys are Automatic** - Generated from function arguments, no code needed
+2. **Cache Tags are Manual** - You add them with `cacheTag()` for grouping
+3. **Keys for Retrieval** - Which cache entry to use when function is called
+4. **Tags for Invalidation** - Which cache entries to expire when data changes
+5. **One Entry, Many Tags** - A single cache entry can have multiple tags
+6. **Different Args = Different Keys** - Even if tags are the same
+
+---
+
 ### Pattern 3: Cache Non-Deterministic Operations
 
 #### When to Use:

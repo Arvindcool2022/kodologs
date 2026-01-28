@@ -9,7 +9,10 @@ export default defineSchema({
     authorEmail: v.string(),
     imgStorageId: v.id("_storage"),
     updatedAt: v.number(),
-  }).index("by_author", ["authorEmail"]),
+  })
+    .index("by_author", ["authorEmail"])
+    .searchIndex("search_title", { searchField: "title" })
+    .searchIndex("search_body", { searchField: "content" }),
 
   comments: defineTable({
     postId: v.id("posts"),

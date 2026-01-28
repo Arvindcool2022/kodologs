@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { NavLink } from "../ui/nav-link";
 import { AuthNavButtons } from "./auth-nav-buttons";
+import { SearchInput } from "./search-input";
 import { ThemeToggle } from "./theme-toggle";
 
 export function Navbar() {
@@ -19,6 +20,9 @@ export function Navbar() {
         </div>
       </div>
       <div className="hidden items-center gap-2 md:flex">
+        <div className="mr-2 hidden md:block">
+          <SearchInput />
+        </div>
         <AuthNavButtons />
         <ThemeToggle />
       </div>

@@ -1,3 +1,4 @@
+import { fetchQuery } from "convex/nextjs";
 import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
 import { cacheLife, cacheTag } from "next/cache";
@@ -11,7 +12,11 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
-import { fetchAuthQuery, preloadAuthQuery } from "@/lib/auth-server";
+import {
+  fetchAuthQuery,
+  getClientToken,
+  preloadAuthQuery,
+} from "@/lib/auth-server";
 import { formatDate } from "@/lib/utils";
 
 type BlogIdProps = Readonly<{ params: Promise<{ id: Id<"posts"> }> }>;
@@ -33,17 +38,18 @@ export async function generateMetaData({
   };
 }
 
-async function getCachedPost(id: Id<"posts">) {
+async function getCachedPost(id: Id<"posts">, token?: string) {
   "use cache";
   cacheLife("minutes");
   cacheTag("blogs", id);
 
-  return await fetchAuthQuery(api.posts.getPostById, { id });
+  return await fetchQuery(api.posts.getPostById, { id }, { token });
 }
 
 export default async function BlogIdRoute({ params }: BlogIdProps) {
   const { id } = await params;
-  const _blogData = getCachedPost(id);
+  const token = await getClientToken();
+  const _blogData = getCachedPost(id, token);
   const _preLoadedComments = preloadAuthQuery(
     api.comments.getCommentsByPostId,
     { postId: id }
@@ -72,7 +78,7 @@ export default async function BlogIdRoute({ params }: BlogIdProps) {
         <Suspense fallback={<Skeleton className="" />}>
           <BlogImage
             alt="cover image"
-            className="rounded-t-lg object-cover transition-transform duration-300 hover:scale-105"
+            className="-z-10 rounded-t-lg object-cover transition-transform duration-300 hover:scale-105"
             fill
             src={blogData.imageUrl}
           />
