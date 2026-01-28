@@ -11,6 +11,7 @@
 import type * as auth from "../auth.js";
 import type * as comments from "../comments.js";
 import type * as http from "../http.js";
+import type * as migrations_add_updated_at from "../migrations/add_updated_at.js";
 import type * as posts from "../posts.js";
 import type * as presence from "../presence.js";
 
@@ -24,6 +25,7 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   comments: typeof comments;
   http: typeof http;
+  "migrations/add_updated_at": typeof migrations_add_updated_at;
   posts: typeof posts;
   presence: typeof presence;
 }>;
